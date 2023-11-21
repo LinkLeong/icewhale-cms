@@ -26,7 +26,8 @@ import { ref } from 'vue'
 import {build} from "@/plugin/release/api/ota.js"
 
 const release_version = ref("v0.4.9")
-const release_note = ref("xxxxxxxxxxx")
+const release_note = ref(`>
+  ## [0.4.9.1]\n### Fixed\n- Fixed the issue of SMB mounts being lost after a reboot.\n- Fixed the download path issue for OTA updates.\n- Optimized the startup interface.\n- Disabled the display of optical drives.\n- Fixed an issue with the display of messages for inserted disks.\n`)
 
 const isBuilding = ref(false)
 
