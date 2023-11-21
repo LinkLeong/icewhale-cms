@@ -1,7 +1,7 @@
-package version
+package ota
 
 import (
-	"github.com/flipped-aurora/gin-vue-admin/server/plugin/version/global"
+	"github.com/flipped-aurora/gin-vue-admin/server/plugin/ota/global"
 	"github.com/flipped-aurora/gin-vue-admin/server/plugin/version/router"
 	"github.com/gin-gonic/gin"
 )
@@ -9,8 +9,10 @@ import (
 type OTAPlugin struct {
 }
 
-func CreateVersionPlug() *OTAPlugin {
-	global.GlobalConfig.Url = "http://origin.casaos.io/casaos-api"
+func CreateOTAPlug() *OTAPlugin {
+	global.GlobalConfig.BuildHost = "192.168.20.233:22"
+	global.GlobalConfig.BuildUser = "ctrdh"
+	global.GlobalConfig.BuildPassword = "223306"
 	return &OTAPlugin{}
 }
 
@@ -19,5 +21,5 @@ func (*OTAPlugin) Register(group *gin.RouterGroup) {
 }
 
 func (*OTAPlugin) RouterPath() string {
-	return "release"
+	return "ota"
 }

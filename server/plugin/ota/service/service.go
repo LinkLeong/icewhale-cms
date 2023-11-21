@@ -1,91 +1,48 @@
 package service
 
 import (
-	"bytes"
-	"encoding/json"
 	"fmt"
-	"io"
-	"net/http"
+	"log"
 
-	"github.com/flipped-aurora/gin-vue-admin/server/plugin/version/global"
-	"github.com/flipped-aurora/gin-vue-admin/server/plugin/version/model"
+	"github.com/flipped-aurora/gin-vue-admin/server/plugin/ota/global"
+	"golang.org/x/crypto/ssh"
 )
 
 type OTAService struct{}
 
-func (e *OTAService) GetVersion() (string, error) {
-	url := global.GlobalConfig.Url + "/v1/sys/versions?user=icewhale"
-	method := "GET"
+func (s *OTAService) Build() error {
+	sshConfig := &ssh.ClientConfig{
+		User: global.GlobalConfig.BuildUser, // 替换为实际的用户名
+		Auth: []ssh.AuthMethod{
+			ssh.Password(global.GlobalConfig.BuildPassword), // 替换为实际的密码
+			// 或使用密钥
+			// ssh.PublicKeys(privateKey()),
+		},
+		HostKeyCallback: ssh.InsecureIgnoreHostKey(), // 不检查服务器的公钥
+	}
 
-	client := &http.Client{}
-	req, err := http.NewRequest(method, url, nil)
+	// 连接到SSH服务器
+	connection, err := ssh.Dial("tcp", global.GlobalConfig.BuildHost, sshConfig)
 	if err != nil {
-		fmt.Println(err)
-		return "", err
+		log.Fatalf("Failed to dial: %s", err)
 	}
-	req.Header.Add("Authorization", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IiIsInBhc3N3b3JkIjoiIiwiZXhwIjoxNjYwNzMzNjg4LCJpc3MiOiJnaW4tYmxvZyJ9.AYzSmJg1fMhGVL3uG6T-zJ7rPeIVodtBAw_cHbbargs")
-	res, err := client.Do(req)
-	if err != nil {
-		fmt.Println(err)
-		return "", err
-	}
-	defer res.Body.Close()
 
-	body, err := io.ReadAll(res.Body)
+	// 创建SSH会话
+	session, err := connection.NewSession()
 	if err != nil {
-		fmt.Println(err)
-		return "", err
+		log.Fatalf("Failed to create session: %s", err)
 	}
-	return string(body), nil
-}
-func (e *OTAService) DeleteVersion(id string) (string, error) {
-	url := global.GlobalConfig.Url + "/v1/sys/version/" + id + "?user=icewhale"
-	method := "DELETE"
-	client := &http.Client{}
-	req, err := http.NewRequest(method, url, nil)
-	if err != nil {
-		fmt.Println(err)
-		return "", err
-	}
-	req.Header.Add("Authorization", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IiIsInBhc3N3b3JkIjoiIiwiZXhwIjoxNjYwNzMzNjg4LCJpc3MiOiJnaW4tYmxvZyJ9.AYzSmJg1fMhGVL3uG6T-zJ7rPeIVodtBAw_cHbbargs")
-	res, err := client.Do(req)
-	if err != nil {
-		fmt.Println(err)
-		return "", err
-	}
-	defer res.Body.Close()
+	defer session.Close()
 
-	body, err := io.ReadAll(res.Body)
-	if err != nil {
-		fmt.Println(err)
-		return "", err
-	}
-	return string(body), nil
-}
-func (e *OTAService) AddVersion(version model.Version) (string, error) {
-	url := global.GlobalConfig.Url + "/v1/sys/version?user=icewhale"
-	method := "POST"
-	configdata, _ := json.Marshal(version)
+	// 执行命令
+	command := "cd /home/ctrdh/operating-system && /home/ctrdh/operating-system/scripts/enter-no-it.sh make zimacube_recovery" // 替换为要执行的命令
+	// command := "ls" // 替换为要执行的命令
 
-	body := bytes.NewBuffer([]byte(configdata))
-	client := &http.Client{}
-	req, err := http.NewRequest(method, url, body)
+	output, err := session.CombinedOutput(command)
 	if err != nil {
-		fmt.Println(err)
-		return "", err
+		log.Fatalf("Failed to run: %s", err, string(output))
 	}
-	req.Header.Add("Authorization", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IiIsInBhc3N3b3JkIjoiIiwiZXhwIjoxNjYwNzMzNjg4LCJpc3MiOiJnaW4tYmxvZyJ9.AYzSmJg1fMhGVL3uG6T-zJ7rPeIVodtBAw_cHbbargs")
-	res, err := client.Do(req)
-	if err != nil {
-		fmt.Println(err)
-		return "", err
-	}
-	defer res.Body.Close()
+	fmt.Println(string(output))
 
-	bodyRes, err := io.ReadAll(res.Body)
-	if err != nil {
-		fmt.Println(err)
-		return "", err
-	}
-	return string(bodyRes), nil
+	return nil
 }
