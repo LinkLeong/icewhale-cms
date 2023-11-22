@@ -8,7 +8,10 @@ import (
 	"golang.org/x/crypto/ssh"
 )
 
-type OTAService struct{}
+type OTAService struct {
+	Status  string
+	Message string
+}
 
 func (s *OTAService) Build(version string, releaseNote string) error {
 	sshConfig := &ssh.ClientConfig{
@@ -21,6 +24,7 @@ func (s *OTAService) Build(version string, releaseNote string) error {
 		HostKeyCallback: ssh.InsecureIgnoreHostKey(), // 不检查服务器的公钥
 	}
 
+	s.Status = "building"
 	// 连接到SSH服务器
 	connection, err := ssh.Dial("tcp", global.GlobalConfig.BuildHost, sshConfig)
 	if err != nil {
@@ -45,11 +49,16 @@ func (s *OTAService) Build(version string, releaseNote string) error {
 		fmt.Println(cmd)
 		output, err := runCommand(connection, cmd)
 		if err != nil {
-			fmt.Println("Failed to run command ", cmd, err)
+			s.Status = "failed"
+			s.Message = err.Error() + " " + output
+			fmt.Println("Failed to run command ", cmd, err, output)
+			return err
 		}
 		fmt.Printf("Output of '%s':\n%s\n", cmd, output)
 	}
 
+	s.Status = "success"
+	s.Message = "构建完成"
 	return nil
 }
 

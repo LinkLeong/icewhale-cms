@@ -28,6 +28,9 @@
 
             <div>
                 构建状态: {{status.status}}
+
+                构建消息: {{status.message}}
+
             </div>
         </div>
 
@@ -48,7 +51,7 @@ const release_version = ref("v0.4.9")
 const release_note = ref(`## [0.4.9.1]\n### Fixed\n- Fixed the issue of SMB mounts being lost after a reboot.\n- Fixed the download path issue for OTA updates.\n- Optimized the startup interface.\n- Disabled the display of optical drives.\n- Fixed an issue with the display of messages for inserted disks.\n`)
 
 const status = reactive({
-    status: "",
+    status: "unstart",
     message: "",
 })
 
@@ -62,17 +65,18 @@ const handleBuildBtnClick =()=>{
         version: release_version.value,
         release_note: release_note.value
     })
+    pollingInterval = setInterval(fetchData, 2000); // 每2000毫秒轮询一次
 }
 
 const fetchData = async () =>{
     const result = await buildStatus()
     status.status = result.data.status
     status.message = result.data.message
+
+    // stop when build finished
+
 }
 
-onMounted(() => {
-    pollingInterval = setInterval(fetchData, 2000); // 每2000毫秒轮询一次
-});
 
 onUnmounted(() => {
     if (pollingInterval) {

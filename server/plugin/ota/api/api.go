@@ -24,7 +24,7 @@ func (p *OTAApi) BuildStatus(c *gin.Context) {
 		Status  string `json:"status"`
 		Message string `json:"message"`
 	}{
-		Status:  "unstart",
-		Message: "未开始",
+		Status:  service.ServiceGroupApp.Status,
+		Message: service.ServiceGroupApp.Message,
 	}, c)
 }
