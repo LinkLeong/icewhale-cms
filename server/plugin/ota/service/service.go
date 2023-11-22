@@ -64,7 +64,7 @@ func (s *OTAService) Build(version string, releaseNote string) error {
 	commands := []string{
 		"echo -e \"" + releaseVersion + "\" > " + global.GlobalConfig.BuildPath + "/buildroot-external/meta",
 		"echo -e \"" + releaseNote + "\" > " + global.GlobalConfig.BuildPath + "/buildroot-external/release-note.md",
-		"cd " + global.GlobalConfig.BuildPath + " && " + global.GlobalConfig.BuildPath + "/scripts/enter-no-it.sh make zimacube_recovery",
+		"cd " + global.GlobalConfig.BuildPath + " && " + global.GlobalConfig.BuildPath + "/scripts/enter-no-it.sh make zimacube",
 	}
 
 	// 依次执行每个命令
