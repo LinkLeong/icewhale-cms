@@ -27,7 +27,7 @@
             </el-button>
 
             <div>
-                构建状态: 未开始
+                构建状态: {{status.status}}
             </div>
         </div>
 
@@ -35,20 +35,25 @@
         <div class="flex flex-col">
             <div class="font-bold text-2xl">发布</div>
         </div>
-
     </div>
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref,reactive,onMounted,onUnmounted } from 'vue'
 
-import {build} from "@/plugin/release/api/ota.js"
+import { build, buildStatus } from "@/plugin/release/api/ota.js"
+
 
 const release_version = ref("v0.4.9")
 const release_note = ref(`## [0.4.9.1]\n### Fixed\n- Fixed the issue of SMB mounts being lost after a reboot.\n- Fixed the download path issue for OTA updates.\n- Optimized the startup interface.\n- Disabled the display of optical drives.\n- Fixed an issue with the display of messages for inserted disks.\n`)
 
-const isBuilding = ref(false)
+const status = reactive({
+    status: "",
+    message: "",
+})
 
+const isBuilding = ref(false)
+let pollingInterval = null;
 const handleBuildBtnClick =()=>{
     console.log(release_note.value)
     console.log(release_version.value)
@@ -58,12 +63,21 @@ const handleBuildBtnClick =()=>{
         release_note: release_note.value
     })
 }
-</script>
 
-<style scoped>
-.ota-action-container{
-    display: flex;
-    flex-direction: column;
-    margin-top: 20px;
+const fetchData = async () =>{
+    const result = await buildStatus()
+    status.status = result.data.status
+    status.message = result.data.message
 }
-</style>
+
+onMounted(() => {
+    pollingInterval = setInterval(fetchData, 2000); // 每2000毫秒轮询一次
+});
+
+onUnmounted(() => {
+    if (pollingInterval) {
+    clearInterval(pollingInterval);
+    }
+});
+
+</script>

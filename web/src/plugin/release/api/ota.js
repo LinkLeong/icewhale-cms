@@ -8,3 +8,10 @@ export const build = (data)=>{
         data
     })
 }
+
+export const buildStatus = ()=>{
+    return service({
+        url:'/ota/build-status',
+        method:'get' 
+    })
+}

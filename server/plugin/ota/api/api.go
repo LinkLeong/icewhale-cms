@@ -18,3 +18,13 @@ func (p *OTAApi) Build(c *gin.Context) {
 	go service.ServiceGroupApp.Build(plug.Version, plug.ReleaseNote)
 	response.OkWithData("开始构建", c)
 }
+
+func (p *OTAApi) BuildStatus(c *gin.Context) {
+	response.OkWithData(struct {
+		Status  string `json:"status"`
+		Message string `json:"message"`
+	}{
+		Status:  "unstart",
+		Message: "未开始",
+	}, c)
+}

@@ -12,11 +12,7 @@ func (s *OTARouter) InitOTARouter(Router *gin.RouterGroup) {
 	plugRouter := Router
 	plugApi := api.ApiGroupApp.OTAApi
 	{
-		//plugRouter.POST("", plugApi.ApiName)
-		// plugRouter.GET("list", plugApi.GetList)
-		// plugRouter.DELETE(":id", plugApi.Delete)
-		// plugRouter.POST("add", plugApi.AddVersion)
 		plugRouter.POST("build", plugApi.Build)
-
+		plugRouter.GET("build-status", plugApi.BuildStatus)
 	}
 }
