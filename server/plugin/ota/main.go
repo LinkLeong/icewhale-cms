@@ -13,7 +13,7 @@ func CreateOTAPlug() *OTAPlugin {
 	global.GlobalConfig.BuildHost = "192.168.20.233:22"
 	global.GlobalConfig.BuildUser = "ctrdh"
 	global.GlobalConfig.BuildPassword = "223306"
-	global.GlobalConfig.BuildPath = "/home/ctrdh/operating-system"
+	global.GlobalConfig.BuildPath = "/home/ctrdh/CasaOS/operating-system"
 	return &OTAPlugin{}
 }
 

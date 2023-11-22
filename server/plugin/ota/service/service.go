@@ -60,7 +60,7 @@ func (s *OTAService) Build(version string, releaseNote string) error {
 	}
 	defer session.Close()
 
-	const releaseVersion := parseVersion(version)
+	releaseVersion := parseVersion(version)
 	commands := []string{
 		"echo -e \"" + releaseVersion + "\" > " + global.GlobalConfig.BuildPath + "/buildroot-external/meta",
 		"echo -e \"" + releaseNote + "\" > " + global.GlobalConfig.BuildPath + "/buildroot-external/release-note.md",

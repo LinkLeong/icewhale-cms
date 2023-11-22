@@ -27,10 +27,12 @@
             </el-button>
 
             <div>
-                构建状态: {{status.status}}
-
-                构建消息: {{status.message}}
-
+                <div>
+                    构建状态: {{status.status}}
+                </div>
+                <div>
+                    构建消息: {{status.message}}
+                </div>
             </div>
         </div>
 
