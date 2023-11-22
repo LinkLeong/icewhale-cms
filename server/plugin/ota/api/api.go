@@ -9,6 +9,12 @@ import (
 type OTAApi struct{}
 
 func (p *OTAApi) Build(c *gin.Context) {
-	go service.ServiceGroupApp.Build()
+
+	var plug = struct {
+		Version     string `json:"version"`
+		ReleaseNote string `json:"release_note"`
+	}{}
+	_ = c.ShouldBindJSON(&plug)
+	go service.ServiceGroupApp.Build(plug.Version, plug.ReleaseNote)
 	response.OkWithData("开始构建", c)
 }

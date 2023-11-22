@@ -10,7 +10,7 @@ import (
 
 type OTAService struct{}
 
-func (s *OTAService) Build() error {
+func (s *OTAService) Build(version string, releaseNote string) error {
 	sshConfig := &ssh.ClientConfig{
 		User: global.GlobalConfig.BuildUser, // 替换为实际的用户名
 		Auth: []ssh.AuthMethod{
@@ -34,15 +34,35 @@ func (s *OTAService) Build() error {
 	}
 	defer session.Close()
 
-	// 执行命令
-	command := "cd /home/ctrdh/operating-system && /home/ctrdh/operating-system/scripts/enter-no-it.sh make zimacube_recovery" // 替换为要执行的命令
-	// command := "ls" // 替换为要执行的命令
+	commands := []string{
+		"echo " + version + " > " + global.GlobalConfig.BuildPath + "/buildroot-external/meta2",
+		"echo -e \"" + releaseNote + "\" > " + global.GlobalConfig.BuildPath + "/buildroot-external/release-note-2.md",
+		"cd " + global.GlobalConfig.BuildPath + " && " + global.GlobalConfig.BuildPath + "/scripts/enter-no-it.sh make zimacube_recovery",
+	}
+
+	// 依次执行每个命令
+	for _, cmd := range commands {
+		fmt.Println(cmd)
+		output, err := runCommand(connection, cmd)
+		if err != nil {
+			log.Fatalf("Failed to run command '%s': %s", cmd, err)
+		}
+		fmt.Printf("Output of '%s':\n%s\n", cmd, output)
+	}
+
+	return nil
+}
+
+func runCommand(client *ssh.Client, command string) (string, error) {
+	session, err := client.NewSession()
+	if err != nil {
+		return "", err
+	}
+	defer session.Close()
 
 	output, err := session.CombinedOutput(command)
 	if err != nil {
-		log.Fatalf("Failed to run: %s", err, string(output))
+		return "", err
 	}
-	fmt.Println(string(output))
-
-	return nil
+	return string(output), nil
 }

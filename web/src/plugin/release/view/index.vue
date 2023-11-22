@@ -35,7 +35,10 @@ const handleBuildBtnClick =()=>{
     console.log(release_note.value)
     console.log(release_version.value)
     isBuilding.value = true
-    build()
+    build({
+        version: release_version.value,
+        release_note: release_note.value
+    })
 }
 </script>
 
