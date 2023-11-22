@@ -30,7 +30,7 @@ func (s *OTAService) Build(version string, releaseNote string) error {
 	// 创建SSH会话
 	session, err := connection.NewSession()
 	if err != nil {
-		log.Fatalf("Failed to create session: %s", err)
+		fmt.Println("Failed to create session: ", err)
 	}
 	defer session.Close()
 
@@ -45,7 +45,7 @@ func (s *OTAService) Build(version string, releaseNote string) error {
 		fmt.Println(cmd)
 		output, err := runCommand(connection, cmd)
 		if err != nil {
-			log.Fatalf("Failed to run command '%s': %s", cmd, err)
+			fmt.Println("Failed to run command ", cmd, err)
 		}
 		fmt.Printf("Output of '%s':\n%s\n", cmd, output)
 	}
