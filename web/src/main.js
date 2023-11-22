@@ -14,6 +14,7 @@ import auth from '@/directive/auth'
 import { store } from '@/pinia'
 import App from './App.vue'
 import { initDom } from './utils/positionToCode'
+import VueSSE from 'vue-sse';
 
 initDom()
 /**
@@ -38,5 +39,7 @@ app
   .use(auth)
   .use(router)
   .mount('#app')
+
+Vue.use(VueSSE);
 
 export default app
