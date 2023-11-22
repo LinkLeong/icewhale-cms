@@ -3,6 +3,7 @@ package service
 import (
 	"fmt"
 	"log"
+	"regexp"
 
 	"github.com/flipped-aurora/gin-vue-admin/server/plugin/ota/global"
 	"golang.org/x/crypto/ssh"
@@ -11,6 +12,27 @@ import (
 type OTAService struct {
 	Status  string
 	Message string
+}
+
+func parseVersion(version string) string {
+	// Regular expression to extract version components
+	re := regexp.MustCompile(`^v(\d+)\.(\d+)\.(\d+)([-\.]?\d*)$`)
+	matches := re.FindStringSubmatch(version)
+
+	// Check if the version string is valid
+	if matches == nil {
+		return "Invalid version format"
+	}
+
+	// Extracting the version components
+	versionMajor := matches[1]
+	versionBuild := matches[2]
+	versionDev := matches[3]
+	versionSub := matches[4]
+
+	// Formatting the output
+	output := fmt.Sprintf("VERSION_MAJOR=%s\nVERSION_BUILD=%s\nVERSION_DEV=%s\nVERSION_SUB=\"%s\"\n\nCASAOS_NAME=\"ZimaOS\"\nCASAOS_ID=\"zimaos\"\n\nDEPLOYMENT=\"development\"\n", versionMajor, versionBuild, versionDev, versionSub)
+	return output
 }
 
 func (s *OTAService) Build(version string, releaseNote string) error {
@@ -38,9 +60,10 @@ func (s *OTAService) Build(version string, releaseNote string) error {
 	}
 	defer session.Close()
 
+	const releaseVersion := parseVersion(version)
 	commands := []string{
-		"echo " + version + " > " + global.GlobalConfig.BuildPath + "/buildroot-external/meta2",
-		"echo -e \"" + releaseNote + "\" > " + global.GlobalConfig.BuildPath + "/buildroot-external/release-note-2.md",
+		"echo -e \"" + releaseVersion + "\" > " + global.GlobalConfig.BuildPath + "/buildroot-external/meta",
+		"echo -e \"" + releaseNote + "\" > " + global.GlobalConfig.BuildPath + "/buildroot-external/release-note.md",
 		"cd " + global.GlobalConfig.BuildPath + " && " + global.GlobalConfig.BuildPath + "/scripts/enter-no-it.sh make zimacube_recovery",
 	}
 
