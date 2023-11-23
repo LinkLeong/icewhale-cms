@@ -1,16 +1,16 @@
 <template>
     <div >
-        <div class="gva-table-box flex flex-col gap-10">
+        <div class="gva-table-box flex flex-col">
             <div class="font-bold text-2xl">构建</div>
             <div class="flex flex-col gap-2">
                 <div class="flex flex-col w-full gap-2">
-                    <div class="flex flex-col w-1/2">
+                    <div class="flex flex-col w-1/2 gap-2">
                         <div>版本号</div>
                         <el-input v-model="release_version"></el-input>
                     </div>
                     <div class="flex flex-col w-1/2 gap-2">
                         <div>更新日志</div>
-                        <el-input class="!h-64" v-model="release_note" type="textarea"  autosize	/>
+                        <el-input class="" v-model="release_note" type="textarea"  autosize />
                     </div>
                 </div>
                 
@@ -28,7 +28,7 @@
                     </el-button>
                 </div>
 
-                <div>
+                <div class="">
                     <div>
                         构建状态: {{status.status}}
                     </div>
@@ -36,9 +36,11 @@
                         构建消息: {{status.message}}
                     </div>
                 </div>
+
             </div>
 
             <div class="divider	divider-neutral	"/>
+
             <div class="flex flex-col">
                 <div class="font-bold text-2xl">发布</div>
             </div>
@@ -69,7 +71,7 @@ const handleBuildBtnClick =()=>{
         version: release_version.value,
         release_note: release_note.value
     })
-
+    status.status = "building"
     pollingInterval = setInterval(fetchData, 2000); // 每2000毫秒轮询一次
 }
 
