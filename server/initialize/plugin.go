@@ -6,6 +6,7 @@ import (
 	"github.com/flipped-aurora/gin-vue-admin/server/global"
 	"github.com/flipped-aurora/gin-vue-admin/server/middleware"
 	"github.com/flipped-aurora/gin-vue-admin/server/plugin/email"
+	"github.com/flipped-aurora/gin-vue-admin/server/plugin/ota"
 	"github.com/flipped-aurora/gin-vue-admin/server/plugin/version"
 	"github.com/flipped-aurora/gin-vue-admin/server/utils/plugin"
 	"github.com/gin-gonic/gin"
@@ -33,5 +34,5 @@ func InstallPlugin(Router *gin.Engine) {
 		global.GVA_CONFIG.Email.Nickname,
 		global.GVA_CONFIG.Email.Port,
 		global.GVA_CONFIG.Email.IsSSL,
-	), version.CreateVersionPlug())
+	), version.CreateVersionPlug(), ota.CreateOTAPlug())
 }
