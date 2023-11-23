@@ -8,11 +8,9 @@
                         <div>版本号</div>
                         <el-input v-model="release_version"></el-input>
                     </div>
-                    <div class="flex flex-col w-1/2">
+                    <div class="flex flex-col w-1/2 gap-2">
                         <div>更新日志</div>
-                        <textarea 
-                            class="h-64"
-                            v-model="release_note" />
+                        <el-input class="!h-64" v-model="release_note" type="textarea"  autosize	/>
                     </div>
                 </div>
                 
