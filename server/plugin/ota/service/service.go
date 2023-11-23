@@ -57,6 +57,9 @@ func (s *OTAService) Build(version string, releaseNote string) error {
 	session, err := connection.NewSession()
 	if err != nil {
 		fmt.Println("Failed to create session: ", err)
+		s.Status = "failed"
+		s.Message = "连不上ssh"
+		return err
 	}
 	defer session.Close()
 

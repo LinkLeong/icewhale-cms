@@ -57,7 +57,6 @@ const status = reactive({
     message: "",
 })
 
-const isBuilding = ref(false)
 let pollingInterval = null;
 const handleBuildBtnClick =()=>{
     console.log(release_note.value)
@@ -69,6 +68,10 @@ const handleBuildBtnClick =()=>{
     })
     pollingInterval = setInterval(fetchData, 2000); // 每2000毫秒轮询一次
 }
+
+const isBuilding = computed(() => {
+    return status.status === "building"
+})
 
 const fetchData = async () =>{
     const result = await buildStatus()
